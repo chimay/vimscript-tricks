@@ -869,7 +869,7 @@ Autoload			|vimscript-tricks-functions-autoload|
 Lambda				|vimscript-tricks-functions-lambda|
 Method				|vimscript-tricks-functions-method|
 Closure				|vimscript-tricks-functions-closure|
-Dict functions			|vimscript-tricks-functions-dict-functions|
+Dict functions			|vimscript-tricks-functions-dict-funs|
 
 ------------------------------------------------------------------------------
 NAME 					*vimscript-tricks-functions-name*
@@ -1094,9 +1094,12 @@ Anonymous function : >
 ==============================================================================
 TABS AND WINDOWS			*vimscript-tricks-tabs-and-windows*
 
-Introduction			|vimscript-tricks-tabs-and-window-introduction|
-Tab number			|vimscript-tricks-tabs-and-window-tab-number|
-Tab buffer list			|vimscript-tricks-tabs-and-window-tab-number|
+Introduction			|vimscript-tricks-tabs-and-windows-introduction|
+Tab number			|vimscript-tricks-tabs-and-windows-tab-number|
+Tab buffer list			|vimscript-tricks-tabs-and-windows-tab-buflist|
+Local window number		|vimscript-tricks-tabs-and-windows-local-win-number|
+Global ID			|vimscript-tricks-tabs-and-windows-global-id|
+Find a window			|vimscript-tricks-tabs-and-windows-find-window|
 
 ------------------------------------------------------------------------------
 INTRODUCTION		*vimscript-tricks-tabs-and-windows-introduction*
@@ -1126,59 +1129,55 @@ With |tabpagebuflist()| : >
  endfor
 <
 
+------------------------------------------------------------------------------
+LOCAL WINDOW NUMBER	*vimscript-tricks-tabs-and-windows-local-win-number*
 
-## Local window number
+Get id : >
 
-Get id :
+ let win_nr = winnr()
+ echo win_nr
+<
 
-```vim
-let win_nr = winnr()
-echo win_nr
-```
+Current local number in a given tab : >
 
-Current local number in a given tab :
+ let tab_nr = 2
+ let win_nr = tabpagewinnr(tab_nr)
+ let last_win_nr = tabpagewinnr(tab_nr, '$')
+ let num_win_on_tab = last_win_nr
+<
 
-```vim
-let tab_nr = 2
-let win_nr = tabpagewinnr(tab_nr)
-let last_win_nr = tabpagewinnr(tab_nr, '$')
-let num_win_on_tab = last_win_nr
-```
+Go to it : >
 
-Go to it :
+ let win_nr = 2
+ execute win_nr 'wincmd w'
+<
 
-```vim
-let win_nr = 2
-execute win_nr 'wincmd w'
-```
+------------------------------------------------------------------------------
+GLOBAL ID			*vimscript-tricks-tabs-and-windows-global-id*
 
-## Global id
+Get id : >
 
-Get id :
+ let win_local_nr = 2
+ let tab_nr = 3
+ let win_id = win_getid(win_local_nr, tab_nr)
+ echo win_id
+ let current_win_id = win_getid()
+ echo current_win_id
+<
 
-```vim
-let win_local_nr = 2
-let tab_nr = 3
-let win_id = win_getid(win_local_nr, tab_nr)
-echo win_id
-let current_win_id = win_getid()
-echo current_win_id
-```
+Go to id : >
 
-Go to id :
+ let win_id = 1012
+ call win_gotoid(win_id)
+<
 
-```vim
-let win_id = 1012
-call win_gotoid(win_id)
-```
+------------------------------------------------------------------------------
+FIND A WINDOW		*vimscript-tricks-tabs-and-windows-find-window*
 
-## Find a window
+Find in which window(s) is displayed a buffer : >
 
-Find in which window(s) is displayed a buffer :
-
-```vim
-let win_list = win_findbuf(buf_nr)
-```
+ let win_list = win_findbuf(buf_nr)
+<
 
 # Mappings
 ## Command maps
