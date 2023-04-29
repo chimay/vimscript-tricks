@@ -1,0 +1,1269 @@
+*vimscript-tricks.txt*		advanced and helpful vimscript tricks
+
+==============================================================================
+CONTENTS			*vimscript-tricks*
+
+Introduction			|vimscript-tricks-introduction|
+Help				|vimscript-tricks-help|
+Expressions			|vimscript-tricks-expressions|
+Numbers				|vimscript-tricks-numbers|
+Variables			|vimscript-tricks-variables|
+
+==============================================================================
+INTRODUCTION				*vimscript-tricks-introduction*
+
+VimL is full of features, but sometimes it is hard to find which function
+or command will do the job you want.
+
+If you ever searched the web for `vim script ex command output in a var`,
+you surely have had results talking about |:redir|. This is ok, but
+there is a more elegant solution for this particular problem.
+
+This wiki collects vim script snippets, whose some were hard to find. You
+may already know some of them, and I hope you will gladly discover
+the others.
+
+==============================================================================
+HELP						*vimscript-tricks-help*
+
+As a VimL programmer, the most used help file is : >
+
+ :help eval.txt
+<
+
+Once there, you can use a plain search.
+
+E.g., searching for `buf.*()` will give you buffer related functions.
+
+You can also use the completion in command mode : >
+
+ :help buf*(<tab>
+<
+
+will give you a list of candidates, like |bufnr()| or |bufadd()|.
+
+The |:helpgrep| command search in all help files and fill the quickfix
+list.
+
+Each kind of VimL object has its own syntax :
+
+- normal mode key : `ctrl-a`
+- insert mode key : `i_ctrl-a`
+- visual mode key : `v_o`
+- command mode key : `c_ctrl-d`, `c_<tab>`
+- command : |:buffers|
+- function : |getbufinfo()|
+- option : `'option'`
+- expression : `expr-&&`
+- regex pattern : `/*`
+- vim flag : `-p`
+
+Finally, the reference : >
+
+ :help help
+ :help help-context
+<
+
+==============================================================================
+EXPRESSIONS					*vimscript-tricks-expressions*
+
+The command |:let| evaluate an expression and assign the result : >
+
+ let list = range(5)
+ echo list
+<
+
+The command |:eval| evaluate an expression without assigning the result : >
+
+ let list = range(5)
+ eval list->add(10)
+ echo list
+<
+
+The command |:call| calls a function, without assigning the result : >
+
+ let list = range(5)
+ call add(list, 10)
+ echo list
+<
+
+==============================================================================
+NUMBERS						*vimscript-tricks-numbers*
+
+
+Float to integer with `float2nr()` : >
+
+ let float = 2.01
+ echo float2nr(float)
+<
+
+Integer to float with |round()| : >
+
+ let int = 2
+ echo round(int)
+<
+
+String to integer with `str2nr()` : >
+
+ let string = '   0002  '
+ echo str2nr(string)
+<
+
+==============================================================================
+VARIABLES					*vimscript-tricks-variables*
+
+Global variables			|vimscript-tricks-variables-global|
+Function local variables		|vimscript-tricks-variables-function-local|
+Other variables scopes			|vimscript-tricks-variables-other-scopes|
+
+------------------------------------------------------------------------------
+GLOBAL VARIABLES			*vimscript-tricks-variables-global*
+
+You can define and access global vars with the `g:` prefix : >
+
+ let g:var = 'global var content'
+ echo g:var
+<
+
+------------------------------------------------------------------------------
+FUNCTION LOCAL VARIABLES	*vimscript-tricks-variables-function-local*
+
+Most of the time, variables used inside a function are local, even
+without the `l:` prefix : >
+
+ let var = 1
+ let box = 2
+ echo 'var from outide : ' var
+ echo 'box from outside : ' box
+ fun! Locals ()
+ 	let var = 3
+ 	let l:box = 4
+ 	echo 'var from inside : ' var
+ 	echo 'l:box from inside : ' l:box
+ 	echo 'box from inside : ' box
+ endfun
+ call Locals ()
+ echo 'var from outide : ' var
+ echo 'box from outside : ' box
+<
+
+The `l:` can sometimes be useful however, for instance to avoid
+confusion with a (neo)vim `v:` variable, like `v:count`.
+
+Its almost for readability, for the editor seem to see the difference : >
+
+ fun! VimVars ()
+ 	let l:count = 3
+ 	echo 'l:count : ' l:count
+ 	echo 'count : ' count
+ 	echo 'v:count : ' v:count
+ endfun
+<
+
+------------------------------------------------------------------------------
+OTHER VARIABLES SCOPES		*vimscript-tricks-variables-other-scopes*
+
+You can define and access buffer local vars with the `b:` prefix : >
+
+ let b:var = 'buffer local var content'
+ echo b:var
+ buffer #
+ " throws an error
+ echo b:var
+<
+
+Here are the other types of local variables and their prefixes :
+
+- window local : `w:`
+- tab local    : `t:`
+- script local : `s:`
+- vim variable : `v:`
+
+==============================================================================
+LIST AND DICTIONARIES			*vimscript-tricks-lists-and-dicts*
+
+Global variables			|vimscript-tricks-variables-global|
+
+------------------------------------------------------------------------------
+LISTS			*vimscript-tricks-lists-and-dict-lists*
+
+Examples : >
+
+ let list = [3, 4, 5, 6, 7]
+ echo list[0]
+ echo list[2]
+ echo list[-1]
+ echo list[-2]
+ echo list[1:]
+ echo list[:-2]
+ echo list[1:3]
+<
+
+------------------------------------------------------------------------------
+DICTIONARIES			*vimscript-tricks-lists-and-dict-dicts*
+
+Examples : >
+
+ " empty
+ let dict = {}
+ echo dict
+ " with some keys & values
+ let dict = { 'one' : 'value one', 'two' : 'value 2'}
+ echo dict
+ " add keys & valuse
+ let dict.name = 'john'
+ let dict.hobbies = ['tennis', 'music']
+ " access values using keys
+ echo dict.name
+ echo dict['hobbies']
+ " using key variable
+ let key = 'name'
+ echo dict[key]
+ let key = 'hobbies'
+ echo dict[key]
+ " list of keys
+ echo keys(dict)
+ " list of values
+ echo values(dict)
+<
+
+------------------------------------------------------------------------------
+COPY					*vimscript-tricks-lists-and-dict-copy*
+
+By default, list & dictionaries are accessed by reference : >
+
+ " list
+ let list = [3, 4, 5, 6, 7]
+ let ref = list
+ let ref[2] = 100
+ " original is modified
+ echo list
+ echo ref
+ " dict
+ let dict = { 'one' : 'value one', 'two' : 'value 2'}
+ let shadow = dict
+ let shadow.one = 'changed'
+ let shadow['two'] = 'again'
+ " original is modified
+ echo dict
+ echo shadow
+<
+
+You can explicitly make a copy :
+
+```vim
+let list = [3, 4, 5, 6, 7]
+let snapshot = copy(list)
+let snapshot[2] = 100
+" no change in original
+echo list
+echo snapshot
+" dict
+let dict = { 'one' : 'value one', 'two' : 'value 2'}
+let snapshot = copy(dict)
+let snapshot.one = 'changed'
+let snapshot['two'] = 'again'
+" no change in original
+echo dict
+echo snapshot
+```
+
+## Nested
+
+In case of a nested list or dict, |copy()| only copy the first level : >
+
+ let nested_list = [range(1,3), range(2, 10)]
+ let shallow = copy(nested_list)
+ echo nested_list
+ echo shallow
+ " modifying first level
+ let shallow[0] = ['new', 'list']
+ " no change in original
+ echo nested_list
+ echo shallow
+<
+
+The objects inside it are passed by reference : >
+
+ let nested_list = [range(1,3), range(2, 10)]
+ let shallow = copy(nested_list)
+ echo nested_list
+ echo shallow
+ " modifying second level
+ let shallow[0][1] = 100
+ " the original is modified
+ echo nested_list
+ echo shallow
+<
+
+To avoid changing the original by mistake, use |deepcopy()| :
+
+ let nested_list = [range(1,3), range(2, 10)]
+ let deep = deepcopy(nested_list)
+ echo nested_list
+ echo deep
+ " modifying second level
+ let deep[0][1] = 100
+ " no change in original
+ echo nested_list
+ echo deep
+<
+
+## Search
+
+First index where element is found : >
+
+ let list = [2, 3, 4, 1]
+ echo list->index(3)
+<
+
+You can specify the starting index : >
+
+let list = [2, 3, 4, 1, 3, 2]
+echo list->index(3)
+echo list->index(3, 2)
+<
+
+## Add
+
+Concat : >
+
+ let first = [0, 1, 2]
+ let second = [3, 4, 5]
+ let list = first + second
+ echo list
+ " extend
+ let list = first
+ echo list
+ eval list->extend(second)
+ echo list
+<
+
+Add : >
+
+ let list = range(3)
+ echo list
+ eval list->add(10)
+ echo list
+<
+
+Insert : >
+
+ " first
+ let list = range(3)
+ echo list
+ eval list->insert(-1)
+ echo list
+ " before index
+ let index = 2
+ eval list->insert(-5, index)
+ echo list
+ " before last
+ eval list->insert(-10, -1)
+ echo list
+ " last (easier with add())
+ let length = len(list)
+ eval list->insert(-20, length)
+ echo list
+<
+
+## Remove
+
+
+```vim
+let list = range(10)
+eval list->remove(5)
+echo list
+let list = range(10)
+eval list->remove(3, 5)
+echo list
+```
+
+## Map
+
+You can apply the same function on all list element with |map()| :
+
+```vim
+let list = range(1, 10)
+eval list->map({ _, val -> 2 * val })
+" or
+call map(list, { _, val -> 2 * val })
+" table of 2
+echo list
+```
+
+## Filter
+
+You can filter list elements with |filter()| : >
+
+ let list = range(1, 10)
+ echo list->filter({ _, val -> val % 3 == 0 })
+<
+
+## Repeat
+
+Repeat the same sequence in a list with |repeat()| :
+
+ echo [0]->repeat(4)
+ echo [0, 1, 2, 3]->repeat(2)
+<
+
+Also works to build strings : >
+
+ echo 0->repeat(4)
+ echo 'a'->repeat(4)
+<
+
+Avoid it for nested list however, references are used internally : >
+
+ let nested = [ [1, 2] ]->repeat(4)
+ echo nested
+ eval nested[0]->add(3)
+ echo nested
+<
+
+Instead, use a combi of range & map : >
+
+ let nested = range(4)->map('[1, 2]')
+ echo nested
+ eval nested[0]->add(3)
+ echo nested
+<
+
+Nested list of empty lists, useful for initialization : >
+
+ " init
+ let nested = range(4)->map('[]')
+ echo nested
+ eval nested[0]->add(2)
+ eval nested[1]->add(3)
+ eval nested[2]->add(4)
+ eval nested[3]->add(5)
+ echo nested
+
+## Join
+
+Concatenate list element in a string with |join()|.
+
+Default separator is space : >
+
+ let list = range(10)
+ echo join(list)
+ echo join(list, ' ')
+<
+
+Alternative separator : >
+
+ let list = range(10)
+ echo join(list, ' - ')
+<
+
+## Split
+
+Split string in list elements with |split()|.
+
+Default separator is space : >
+
+ let string = 'one two three'
+ echo split(string)
+ echo split(string, ' ')
+<
+
+Alternative separator : >
+
+ let string = 'one - two - three'
+ echo split(string, ' - ')
+<
+
+Inner empty elements are kept : >
+
+ let string = 'one -  - two - three'
+ echo split(string, ' - ')
+<
+
+Empty element at begin or end are kept only if asked : >
+
+ let string = ' - one - two - three - '
+ echo split(string, ' - ')
+ let keepempty = v:true
+ echo split(string, ' - ', keepempty)
+<
+
+# Constants
+
+```vim
+let box = 3
+echo box
+" box -> constant
+lockvar box
+" throws error E741
+let box = 4
+echo box
+" box -> variable
+unlockvar box
+" ok
+let box = 5
+echo box
+```
+
+# Variable containing code
+## Ex command
+
+With |:execute| : >
+
+ let code = 'let var = range(5)'
+ execute code
+ echo var
+<
+
+## Expression
+
+With |eval()| : >
+
+ let expression = "strftime('%H:%M')"
+ echo eval(expression)
+<
+
+Can be used to revert |string()| : >
+
+ let list = range(10)
+ let str = string(list)
+ " returns 1 = string
+ echo type(str)
+ let new_list = eval(str)
+ " returns 3 = list
+ echo type(new_list)
+<
+
+## Normal mode
+
+With |:normal| : >
+
+ let delta = 2
+ execute 'normal! ' . delta . "\<c-o>"
+<
+
+## Pointer : variable name
+
+Variable containing the name of another variable : >
+
+ let var = 'hello'
+ let ptr = 'var'
+ echo {ptr}
+<
+
+# Options
+
+Access global option value with ampersand and `g:` prefix :
+
+```vim
+let &g:modifiable = 1
+echo &g:modifiable
+```
+
+Access local option value with ampersand and `l:` prefix :
+
+```vim
+let &l:modifiable = 1
+echo &l:modifiable
+```
+
+See also |setglobal|, |setlocal| and `let-&`.
+
+
+Don't confuse :
+
+- the buffer local `l:` prefix in options
+- the function local `l:` prefix in variables
+- the buffer local `b:` prefix in variables
+
+# File system
+## Test
+
+Test for a regular file :
+
+```vim
+if filereadable(my_file)
+	call do_something (my_file)
+endif
+```
+
+Test for a directory :
+
+```vim
+if isdirectory(my_dir)
+	call do_something (my_dir)
+endif
+```
+
+## File name
+
+Expand the tilde with |expand()| :
+
+```vim
+echo expand('~/Documents')
+```
+
+Modify the name with |fnamemodify()| :
+
+```vim
+" full path
+echo fnamemodify('~/Documents/file', ':p')
+echo fnamemodify('Documents/folder/file', ':p')
+" directory part (head)
+echo fnamemodify('~/Documents/file', ':h')
+echo fnamemodify('Documents/folder/file', ':h')
+" file part (tail)
+echo fnamemodify('~/Documents/file', ':t')
+echo fnamemodify('Documents/folder/file', ':t')
+" without extension
+echo fnamemodify('~/Documents/file.ext', ':r')
+echo fnamemodify('Documents/folder/file.ext', ':r')
+echo fnamemodify('~/Documents/file.tar.gz', ':r')
+echo fnamemodify('~/Documents/file.tar.gz', ':r:r')
+" extension
+echo fnamemodify('~/Documents/file.ext', ':e')
+echo fnamemodify('~/Documents/file.tar.gz', ':e')
+echo fnamemodify('~/Documents/file.tar.gz', ':e:e')
+```
+
+## Globbing
+
+List of files & dirs in current folder :
+
+```vim
+echo glob('*', v:false, v:true)
+```
+
+Recursive, all tree of files & dirs in current folder :
+
+```vim
+echo glob('**', v:false, v:true)
+```
+
+Note the double asterisk.
+
+Tree of vim files :
+
+```vim
+echo glob('**/*.vim', v:false, v:true)
+```
+
+# Buffers
+## Number & name
+
+Name from number :
+
+```vim
+echo bufname(1)
+```
+
+Number from name :
+
+```vim
+let name = bufname(1)
+echo bufnr(name)
+```
+
+## List of buffers
+
+All buffers :
+
+```vim
+let buffers = getbufinfo()
+for buf in buffers
+	echo buf.number ':' buf.name
+endfor
+```
+Listed buffers :
+
+```vim
+let buffers = getbufinfo({'buflisted' : 1})
+for buf in buffers
+	echo buf.number ':' buf.name
+endfor
+```
+
+## Lines
+### Current buffer
+
+List of lines in current buffer :
+
+```
+" -- line number, output is a string
+" current line
+echo getline('.')
+" last line
+echo getline('$')
+" -- range of line, output is a list
+echo getline(1, 10)
+echo getline('.', '$')
+```
+
+With `setline(line, text)`, you can change a line.
+
+With `append(line, text)`, you can append content below a line.
+
+With `:put =var`, you can add |var| content below the cursor.
+
+With `:put =list`, you add an element of |list| per line.
+
+### Any buffer
+
+```
+" alternate buffer
+let bufnum = '#'
+" -- line number, output is a string
+echo getbufline(bufnum, 5)
+echo getbufline(bufnum, '$')
+" -- range of line, output is a list
+echo getbufline(bufnum, 1, 10)
+echo getbufline(bufnum, 1, '$')
+echo getbufline(bufnum, 1, '$')[4]
+```
+
+See also |setbufline()|, |appendbufline()|.
+
+# Stream : Input / Output
+## Ex command output into a variable
+
+With |execute()| :
+
+```vim
+let var = execute('tabs')
+echo var
+let list = split(var, "\n")
+echo list
+```
+
+With |:redir| :
+
+```vim
+redir => var
+tabs
+redir END
+let list = split(var, "\n")
+echo list
+```
+
+## Shell command output into a variable
+
+
+With `system*()` :
+
+```vim
+let var = system('ls -l')
+echo var
+let list = systemlist('ls -l')
+echo list
+```
+
+## File content into a list
+
+With |readfile()| :
+
+```vim
+let file = expand('~/Documents/file')
+let list = readfile(file)
+echo list
+let head = readfile(file, '', 10)
+echo head
+let tail = readfile(file, '', -10)
+echo tail
+```
+
+## List content into a file
+
+With |writefile()| :
+
+```vim
+let list = ['first line', 'second line', 'third line']
+let file = expand('~/Documents/list-file')
+" replace content
+call writefile(list, file)
+" add content
+call writefile(list, file, 'a')
+```
+
+With |:redir| :
+
+```vim
+let list = ['first line', 'second line', 'third line']
+let content = join(list, "\n")
+let file = expand('~/Documents/content-file')
+execute 'redir! >' file
+silent! echo content
+redir END
+execute 'redir! >>' file
+silent! echo content
+redir END
+```
+
+Note the distinction between the function |execute()|
+and the command |:execute|
+
+# Functions
+## Name
+
+Variable containing a function name :
+
+```vim
+let fun = 'strftime'
+echo {fun}('%H:%M')
+```
+
+## References
+
+Funcref by name or reference :
+
+```vim
+let Funcname = function('Fun')
+let Funcref = funcref('Fun')
+```
+
+If |Fun| is redefined :
+
+- function() will refer to the new function having the same name
+- funcref() will refer to the old function
+
+|Fun| can also be defined after the call to |function()|
+
+Funcref by name :
+
+```vim
+let list = range(3)
+let Fun = function('add')
+echo Fun(list, 4)
+echo list
+```
+
+With predefined argument(s) :
+
+```vim
+let list = range(3)
+" add(list, element)
+let Fun = function('add', [list])
+echo Fun(4)
+echo Fun(5)
+echo list
+```
+
+## Arguments
+
+Inside a function definition, arguments are accessed with a `a:` prefix :
+
+```vim
+fun! Fun (argument)
+	return a:argument
+endfun
+echo Fun('hello')
+```
+
+You can call a function with a given argument list : `call(function, argument-list)` :
+
+```vim
+let list = range(5)
+let element = 'new'
+" synonym of add(list, element)
+echo call('add', [list, element])
+echo list
+```
+
+Also works with a funcref :
+
+```vim
+let list = range(5)
+let Fun = function('add')
+let element = 'new'
+" synonym of add(list, element)
+echo call(Fun, [list, element])
+echo list
+```
+
+## Optional arguments
+### Named optional argument
+
+YOu can give a name to an optional argument :
+
+```vim
+fun! Fun (optional = 'default value')
+	return a:optional
+endfun
+echo Fun ()
+echo Fun ('another value')
+```
+
+### Anonymous optional arguments
+
+Optional arguments can be defined with the three dots syntax `Fun(...)`.
+You can access them with these special variables :
+
+- a:0 : number of optional args
+- a:1 : first optional arg
+- a:2 : second optional arg
+- ...
+- a:000 : list of optional args
+
+Application : pass the optional arguments of a function to another one :
+
+```vim
+fun! Fun (...)
+	let var = call('add', a:000)
+	return var
+endfun
+let list = range(5)
+echo Fun (list, 7)
+```
+
+### Mixed
+
+```vim
+fun! Fun (named = 'default', ...)
+	return #{named: a:named, anonymous: a:000}
+endfun
+echo Fun ()
+echo Fun ('value')
+echo Fun ('value', 'one', 'two')
+```
+
+## Autoload
+
+It is a good idea to use the autoload feature as much as possible. The
+definition of a function |myfunction| in a file |myfile| located in
+`autoload/myfolder/` looks like :
+
+```vim
+fun! myfolder#myfile#myfunction ()
+	...
+endfun
+```
+
+The `autoload/myfolder` has to be somewhere in your |runtimepath|.
+
+## Lambda
+
+```vim
+let list = [2, 3, 5, 4, 1]
+echo filter(list, {index, value -> value >= 4})
+let list = [2, 3, 5, 1, -1]
+echo map(list, {index, value -> index + value})
+```
+
+## Method
+
+```vim
+let number = -3.14
+echo number->abs()
+echo number->abs()->cos()
+echo number->abs()->cos()->acos()
+```
+
+Lambda method :
+
+```vim
+let number = 3
+echo number->{ x -> 2 * x }()
+echo number->{ x, y -> x + y }(4)
+```
+
+## Closure
+
+```vim
+fun! Fonctional(fn, value)
+	fun! Function(arg) closure
+		return a:fn(a:arg, a:value)
+	endfun
+	return funcref('Function')
+endfun
+
+let list = range(10)
+" add(list, element)
+echo Fonctional(function('add'), 3)(list)
+let F = Fonctional(function('add'), 5)
+echo F(list)
+```
+
+## Dict functions
+
+Dict function :
+
+```vim
+fun! Fundict (arg) dict
+	echo self.name a:arg
+endfun
+" associate it with a dict
+let dict = {'name' : 'John'}
+let dict.fun = function('Fundict')
+" call it
+call dict.fun('Doe')
+" function ref
+let F = function('Fundict', dict)
+call F('Smith')
+" with empty arg
+let G = function('Fundict', [], dict)
+call G('Foo')
+" with predefined arg
+let H = function('Fundict', ['Bar'], dict)
+call H()
+```
+
+Anonymous function :
+
+```vim
+let dict = {'name' : 'John'}
+fun! dict.iam (arg) dict
+	echo self.name a:arg
+endfun
+call dict.iam('Will')
+```
+
+# Tabs & windows
+## Introduction
+
+Each window has a :
+
+- local tab number
+- global unique ID (until you restart vim, of course)
+
+## Tab number
+
+```vim
+let current_tab = tabpagenr()
+let last_tab = tabpagenr('$')
+```
+
+## Buffer list of a tab
+
+With |tabpagebuflist()| :
+
+```vim
+let last = tabpagenr('$')
+for tab in range(1, last)
+	echo tab ':' tabpagebuflist(tab)
+endfor
+```
+
+
+## Local window number
+
+Get id :
+
+```vim
+let win_nr = winnr()
+echo win_nr
+```
+
+Current local number in a given tab :
+
+```vim
+let tab_nr = 2
+let win_nr = tabpagewinnr(tab_nr)
+let last_win_nr = tabpagewinnr(tab_nr, '$')
+let num_win_on_tab = last_win_nr
+```
+
+Go to it :
+
+```vim
+let win_nr = 2
+execute win_nr 'wincmd w'
+```
+
+## Global id
+
+Get id :
+
+```vim
+let win_local_nr = 2
+let tab_nr = 3
+let win_id = win_getid(win_local_nr, tab_nr)
+echo win_id
+let current_win_id = win_getid()
+echo current_win_id
+```
+
+Go to id :
+
+```vim
+let win_id = 1012
+call win_gotoid(win_id)
+```
+
+## Find a window
+
+Find in which window(s) is displayed a buffer :
+
+```vim
+let win_list = win_findbuf(buf_nr)
+```
+
+# Mappings
+## Command maps
+
+Of course, you can use :
+
+```vim
+" command
+nnoremap <c-right> :tabnext<cr>
+" with <c-u> to avoid things like :'<,'>
+nnoremap <c-right> :<c-u>tabnext<cr>
+" call function
+nnoremap <c-right> :call goto_next_tab()<cr>
+" from insert mode
+inoremap <c-right> <esc>:tabnext<cr>i
+```
+
+but it’s often better to use `<cmd>` :
+
+```vim
+" command, no need to add <c-u>
+nnoremap <c-right> <cmd>tabnext<cr>
+" call function
+nnoremap <c-right> <cmd>call goto_next_tab()<cr>
+" from insert mode, no need to surround with <esc>...i
+inoremap <c-right> <cmd>tabnext<cr>
+```
+
+Advantages :
+
+- execute the command without leaving the mode
+- no need to add `<c-u>` after the colon
+- also works from insert mode without addition
+- faster
+- silent
+
+## Expression
+
+An expression map is an indirect one : it calls the function given on
+the rhs to obtain the actual rhs of the map.
+
+Example : if we define the function :
+
+```vim
+fun! TakeFive ()
+	return '5j'
+endfun
+```
+
+and the map :
+
+```vim
+nnoremap <expr> <F3> TakeFive()
+```
+
+hitting `<F3>` will move the cursor down five lines.
+
+
+## Plugs
+
+Define a plug :
+
+```vim
+noremap <plug>(myplugin-function) <cmd>call plugin#file#function()<cr>
+```
+
+and let the user use it for his own map :
+
+```vim
+map <user-key> <plug>(myplugin-function)
+```
+
+This last map must be recursive to work.
+
+# Autocommands
+## Custom
+
+You can trigger a custom event, somewhere in your plugin :
+
+```vim
+doautocmd User MyPluginEvent
+```
+
+and let the user add whatever command he wants to it :
+
+```vim
+autocmd User MyPluginEvent echo 'hello there !'
+```
+
+## Control execution
+
+To avoid auto-execution, use |noautocmd|.
+
+This one change window without triggering autocommand :
+
+```vim
+noautocmd call win_gotoid(window_id)
+```
+
+If needed, you can trigger them later by using |doautocmd| :
+
+```vim
+doautocmd WinEnter
+doautocmd BufEnter
+	...
+```
+
+## No ordinary write
+
+Some buffers are special, and not related to a file, like the quickfix
+window. In that case, writing it does not mean a simple copy to the
+file system, but can involve a completely distinct operation. The
+|BufWriteCmd| event is there to modify the meaning of the |:write|
+command.  These autocommands are often buffer local. Example :
+
+```
+autocmd BufWriteCmd <buffer> call FancyStuff ()
+```
+
+Writing the buffer where this autocommand is defined will call
+|FancyStuff()| instead of saving to disc.
+
+
+## Yank ring
+
+First define a global var to hold the ring :
+
+```vim
+let g:yankring = []
+```
+
+then define a function to add yanks :
+
+```vim
+fun! Add2yankring ()
+	let content = getreg('"')
+	call insert(yanks, content)
+endfun
+```
+
+With this autocommand, your function will be triggered at each yank :
+
+```vim
+autocmd TextYankPost * call Add2yankring()
+```
+
+# Common typos
+
+## Let it be
+
+Can you see this one ?
+
+```vim
+let bufnum = bufnr('%')
+let filename = bufname(bufnum)
+let filename = fnamemodify(filename, ':t')
+lef filename = fnamemodify(filename, ':p')
+echo filename
+```
+
+The |filename| var is not what you could expect. In a big file, you can
+easily miss it, and you could lose time to find it, because vim will
+throw no error. In the fourth line, it's a |lef| where it should be a
+|let|. The former is a shortcut for |:left|.
+
+So, when things are not working as they should, always search for
+`\<lef\>` : either it is a typo for |let|, or it is intended and you
+want to type the full |left| instead.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:nofen:
