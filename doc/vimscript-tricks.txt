@@ -17,6 +17,7 @@ Functions			|vimscript-tricks-functions|
 Tabs & windows			|vimscript-tricks-tabs-and-windows|
 Mappings			|vimscript-tricks-mappings|
 Autocommands			|vimscript-tricks-autocommands|
+Common typos			|vimscript-tricks-common-typos|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -1332,9 +1333,13 @@ With this autocommand, your function will be triggered at each yank : >
  autocmd TextYankPost * call Add2yankring()
 <
 
-# Common typos
+==============================================================================
+COMMON TYPOS					*vimscript-tricks-common-typos*
 
-## Let it be
+Let it be			|vimscript-tricks-common-typos-let-it-be|
+
+------------------------------------------------------------------------------
+LET IT BE		*vimscript-tricks-autocommands-let-it-be*
 
 Can you see this one ?
 
