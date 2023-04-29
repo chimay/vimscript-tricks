@@ -3,30 +3,12 @@
 <!-- vim-markdown-toc GFM -->
 
 * [Introduction](#introduction)
-    * [What is it ?](#what-is-it-)
-    * [Compatibilty](#compatibilty)
-    * [Features](#features)
-    * [Differences with standard orgmode](#differences-with-standard-orgmode)
-    * [Dependencies](#dependencies)
-    * [Why another orgmode clone for vim ?](#why-another-orgmode-clone-for-vim-)
 * [Installation](#installation)
     * [Using vim-packager](#using-vim-packager)
     * [Using minpac](#using-minpac)
     * [Using vim-plug](#using-vim-plug)
     * [Cloning the repo in a pack-start directory](#cloning-the-repo-in-a-pack-start-directory)
-* [Configuration](#configuration)
-* [Bindings](#bindings)
-    * [Speed keys](#speed-keys)
-    * [Always defined](#always-defined)
-    * [Prefixless](#prefixless)
-    * [With prefix](#with-prefix)
-    * [Custom](#custom)
-* [Fold markers](#fold-markers)
-* [Prompt completion](#prompt-completion)
-* [Meta-command](#meta-command)
-* [Autocommands](#autocommands)
-* [Warning](#warning)
-* [Related](#related)
+* [Usage](#usage)
 
 <!-- vim-markdown-toc -->
 
