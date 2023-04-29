@@ -8,6 +8,7 @@ Help				|vimscript-tricks-help|
 Expressions			|vimscript-tricks-expressions|
 Numbers				|vimscript-tricks-numbers|
 Variables			|vimscript-tricks-variables|
+Lists & Dictionaries		|vimscript-tricks-lists-and-dicts|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -182,10 +183,21 @@ Here are the other types of local variables and their prefixes :
 ==============================================================================
 LIST AND DICTIONARIES			*vimscript-tricks-lists-and-dicts*
 
-Global variables			|vimscript-tricks-variables-global|
+Lists			|vimscript-tricks-lists-and-dicts-lists|
+Dictionaries		|vimscript-tricks-lists-and-dicts-dicts|
+Copy			|vimscript-tricks-lists-and-dicts-copy|
+Nested			|vimscript-tricks-lists-and-dicts-nested|
+Search			|vimscript-tricks-lists-and-dicts-search|
+Add			|vimscript-tricks-lists-and-dicts-add|
+Remove			|vimscript-tricks-lists-and-dicts-remove|
+Map			|vimscript-tricks-lists-and-dicts-map|
+Filter			|vimscript-tricks-lists-and-dicts-filter|
+Repeat			|vimscript-tricks-lists-and-dicts-repeat|
+Join			|vimscript-tricks-lists-and-dicts-join|
+Split			|vimscript-tricks-lists-and-dicts-split|
 
 ------------------------------------------------------------------------------
-LISTS			*vimscript-tricks-lists-and-dict-lists*
+LISTS			*vimscript-tricks-lists-and-dicts-lists*
 
 Examples : >
 
@@ -200,7 +212,7 @@ Examples : >
 <
 
 ------------------------------------------------------------------------------
-DICTIONARIES			*vimscript-tricks-lists-and-dict-dicts*
+DICTIONARIES			*vimscript-tricks-lists-and-dicts-dicts*
 
 Examples : >
 
@@ -228,7 +240,7 @@ Examples : >
 <
 
 ------------------------------------------------------------------------------
-COPY					*vimscript-tricks-lists-and-dict-copy*
+COPY				*vimscript-tricks-lists-and-dicts-copy*
 
 By default, list & dictionaries are accessed by reference : >
 
@@ -249,26 +261,26 @@ By default, list & dictionaries are accessed by reference : >
  echo shadow
 <
 
-You can explicitly make a copy :
+You can explicitly make a copy : >
 
-```vim
-let list = [3, 4, 5, 6, 7]
-let snapshot = copy(list)
-let snapshot[2] = 100
-" no change in original
-echo list
-echo snapshot
-" dict
-let dict = { 'one' : 'value one', 'two' : 'value 2'}
-let snapshot = copy(dict)
-let snapshot.one = 'changed'
-let snapshot['two'] = 'again'
-" no change in original
-echo dict
-echo snapshot
-```
+ let list = [3, 4, 5, 6, 7]
+ let snapshot = copy(list)
+ let snapshot[2] = 100
+ " no change in original
+ echo list
+ echo snapshot
+ " dict
+ let dict = { 'one' : 'value one', 'two' : 'value 2'}
+ let snapshot = copy(dict)
+ let snapshot.one = 'changed'
+ let snapshot['two'] = 'again'
+ " no change in original
+ echo dict
+ echo snapshot
+<
 
-## Nested
+------------------------------------------------------------------------------
+NESTED				*vimscript-tricks-lists-and-dicts-nested*
 
 In case of a nested list or dict, |copy()| only copy the first level : >
 
@@ -296,7 +308,7 @@ The objects inside it are passed by reference : >
  echo shallow
 <
 
-To avoid changing the original by mistake, use |deepcopy()| :
+To avoid changing the original by mistake, use |deepcopy()| : >
 
  let nested_list = [range(1,3), range(2, 10)]
  let deep = deepcopy(nested_list)
@@ -309,7 +321,8 @@ To avoid changing the original by mistake, use |deepcopy()| :
  echo deep
 <
 
-## Search
+------------------------------------------------------------------------------
+SEARCH				*vimscript-tricks-lists-and-dicts-search*
 
 First index where element is found : >
 
@@ -324,7 +337,8 @@ echo list->index(3)
 echo list->index(3, 2)
 <
 
-## Add
+------------------------------------------------------------------------------
+ADD				*vimscript-tricks-lists-and-dicts-add*
 
 Concat : >
 
@@ -367,32 +381,34 @@ Insert : >
  echo list
 <
 
-## Remove
+------------------------------------------------------------------------------
+REMOVE				*vimscript-tricks-lists-and-dicts-remove*
 
+Remove element(s) : >
 
-```vim
-let list = range(10)
-eval list->remove(5)
-echo list
-let list = range(10)
-eval list->remove(3, 5)
-echo list
-```
+ let list = range(10)
+ eval list->remove(5)
+ echo list
+ let list = range(10)
+ eval list->remove(3, 5)
+ echo list
+<
 
-## Map
+------------------------------------------------------------------------------
+MAP				*vimscript-tricks-lists-and-dicts-map*
 
-You can apply the same function on all list element with |map()| :
+You can apply the same function on all list element with |map()| : >
 
-```vim
-let list = range(1, 10)
-eval list->map({ _, val -> 2 * val })
-" or
-call map(list, { _, val -> 2 * val })
-" table of 2
-echo list
-```
+ let list = range(1, 10)
+ eval list->map({ _, val -> 2 * val })
+ " or
+ call map(list, { _, val -> 2 * val })
+ " table of 2
+ echo list
+<
 
-## Filter
+------------------------------------------------------------------------------
+FILTER				*vimscript-tricks-lists-and-dicts-filter*
 
 You can filter list elements with |filter()| : >
 
@@ -400,9 +416,10 @@ You can filter list elements with |filter()| : >
  echo list->filter({ _, val -> val % 3 == 0 })
 <
 
-## Repeat
+------------------------------------------------------------------------------
+REPEAT				*vimscript-tricks-lists-and-dicts-repeat*
 
-Repeat the same sequence in a list with |repeat()| :
+Repeat the same sequence in a list with |repeat()| : >
 
  echo [0]->repeat(4)
  echo [0, 1, 2, 3]->repeat(2)
@@ -441,7 +458,8 @@ Nested list of empty lists, useful for initialization : >
  eval nested[3]->add(5)
  echo nested
 
-## Join
+------------------------------------------------------------------------------
+JOIN				*vimscript-tricks-lists-and-dicts-join*
 
 Concatenate list element in a string with |join()|.
 
@@ -458,7 +476,8 @@ Alternative separator : >
  echo join(list, ' - ')
 <
 
-## Split
+------------------------------------------------------------------------------
+SPLIT				*vimscript-tricks-lists-and-dicts-split*
 
 Split string in list elements with |split()|.
 
