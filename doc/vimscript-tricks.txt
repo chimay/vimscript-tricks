@@ -12,6 +12,8 @@ Lists & Dictionaries		|vimscript-tricks-lists-and-dicts|
 Constants			|vimscript-tricks-constants|
 File system			|vimscript-tricks-filesystem|
 Buffers				|vimscript-tricks-buffers|
+Stream				|vimscript-tricks-stream|
+Functions			|vimscript-tricks-functions|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -693,6 +695,8 @@ Tree of vim files : >
 BUFFERS						*vimscript-tricks-buffers*
 
 Number and name			|vimscript-tricks-buffers-number-and-name|
+List				|vimscript-tricks-buffers-list|
+Lines				|vimscript-tricks-buffers-lines|
 
 ------------------------------------------------------------------------------
 NUMBER AND NAME			*vimscript-tricks-buffers-number-and-name*
@@ -709,7 +713,7 @@ Number from name : >
 <
 
 ------------------------------------------------------------------------------
-LIST OF BUFFERS				*vimscript-tricks-buffers-list*
+LIST					*vimscript-tricks-buffers-list*
 
 All buffers : >
 
@@ -752,192 +756,211 @@ With `:put =var`, you can add |var| content below the cursor.
 
 With `:put =list`, you add an element of |list| per line.
 
-### Any buffer
+Any buffer~
 
-```
-" alternate buffer
-let bufnum = '#'
-" -- line number, output is a string
-echo getbufline(bufnum, 5)
-echo getbufline(bufnum, '$')
-" -- range of line, output is a list
-echo getbufline(bufnum, 1, 10)
-echo getbufline(bufnum, 1, '$')
-echo getbufline(bufnum, 1, '$')[4]
-```
+Example : >
+
+ " alternate buffer
+ let bufnum = '#'
+ " -- line number, output is a string
+ echo getbufline(bufnum, 5)
+ echo getbufline(bufnum, '$')
+ " -- range of line, output is a list
+ echo getbufline(bufnum, 1, 10)
+ echo getbufline(bufnum, 1, '$')
+ echo getbufline(bufnum, 1, '$')[4]
+<
 
 See also |setbufline()|, |appendbufline()|.
 
-# Stream : Input / Output
-## Ex command output into a variable
+==============================================================================
+STREAM						*vimscript-tricks-stream*
 
-With |execute()| :
+Input / Output
 
-```vim
-let var = execute('tabs')
-echo var
-let list = split(var, "\n")
-echo list
-```
+Ex command				|vimscript-tricks-stream-ex-command|
+Shell command				|vimscript-tricks-stream-shell-command|
+File content into a list		|vimscript-tricks-stream-file-to-list|
+List content into a file		|vimscript-tricks-stream-list-to-file|
 
-With |:redir| :
+------------------------------------------------------------------------------
+EX COMMAND 				*vimscript-tricks-stream-ex-command*
 
-```vim
-redir => var
-tabs
-redir END
-let list = split(var, "\n")
-echo list
-```
+Ex command output into a variable with |execute()| :
 
-## Shell command output into a variable
+ let var = execute('tabs')
+ echo var
+ let list = split(var, "\n")
+ echo list
+<
 
+With |:redir| : >
 
-With `system*()` :
+ redir => var
+ tabs
+ redir END
+ let list = split(var, "\n")
+ echo list
+<
 
-```vim
-let var = system('ls -l')
-echo var
-let list = systemlist('ls -l')
-echo list
-```
+------------------------------------------------------------------------------
+SHELL COMMAND 			*vimscript-tricks-stream-shell-command*
 
-## File content into a list
+Shell command output into a variable with |system()| or |systemlist()| : >
 
-With |readfile()| :
+ let var = system('ls -l')
+ echo var
+ let list = systemlist('ls -l')
+ echo list
+<
 
-```vim
-let file = expand('~/Documents/file')
-let list = readfile(file)
-echo list
-let head = readfile(file, '', 10)
-echo head
-let tail = readfile(file, '', -10)
-echo tail
-```
+------------------------------------------------------------------------------
+FILE CONTENT INTO A LIST 		*vimscript-tricks-stream-file-to-list*
 
-## List content into a file
+With |readfile()| : >
 
-With |writefile()| :
+ let file = expand('~/Documents/file')
+ let list = readfile(file)
+ echo list
+ let head = readfile(file, '', 10)
+ echo head
+ let tail = readfile(file, '', -10)
+ echo tail
+<
 
-```vim
-let list = ['first line', 'second line', 'third line']
-let file = expand('~/Documents/list-file')
-" replace content
-call writefile(list, file)
-" add content
-call writefile(list, file, 'a')
-```
+------------------------------------------------------------------------------
+LIST CONTENT INTO A FILE 		*vimscript-tricks-stream-list-to-file*
 
-With |:redir| :
+With |writefile()| : >
 
-```vim
-let list = ['first line', 'second line', 'third line']
-let content = join(list, "\n")
-let file = expand('~/Documents/content-file')
-execute 'redir! >' file
-silent! echo content
-redir END
-execute 'redir! >>' file
-silent! echo content
-redir END
-```
+ let list = ['first line', 'second line', 'third line']
+ let file = expand('~/Documents/list-file')
+ " replace content
+ call writefile(list, file)
+ " add content
+ call writefile(list, file, 'a')
+<
+
+With |:redir| : >
+
+ let list = ['first line', 'second line', 'third line']
+ let content = join(list, "\n")
+ let file = expand('~/Documents/content-file')
+ execute 'redir! >' file
+ silent! echo content
+ redir END
+ execute 'redir! >>' file
+ silent! echo content
+ redir END
+<
 
 Note the distinction between the function |execute()|
 and the command |:execute|
 
-# Functions
-## Name
+==============================================================================
+FUNCTIONS					*vimscript-tricks-functions*
 
-Variable containing a function name :
+Name				|vimscript-tricks-functions-name|
+References			|vimscript-tricks-functions-references|
+Arguments			|vimscript-tricks-functions-arguments|
+optional arguments		|vimscript-tricks-functions-optional-arguments|
+Autoload			|vimscript-tricks-functions-autoload|
+Lambda				|vimscript-tricks-functions-lambda|
+Method				|vimscript-tricks-functions-method|
 
-```vim
-let fun = 'strftime'
-echo {fun}('%H:%M')
-```
+------------------------------------------------------------------------------
+NAME 					*vimscript-tricks-functions-name*
 
-## References
+Variable containing a function name : >
 
-Funcref by name or reference :
+ let fun = 'strftime'
+ echo {fun}('%H:%M')
+<
 
-```vim
-let Funcname = function('Fun')
-let Funcref = funcref('Fun')
-```
+------------------------------------------------------------------------------
+REFERENCES			*vimscript-tricks-functions-references*
 
-If |Fun| is redefined :
+Function reference by name or reference : >
+
+ let Funcname = function('Fun')
+ let Funcref = funcref('Fun')
+<
+
+If the custom function `Fun` is redefined after that : >
 
 - function() will refer to the new function having the same name
 - funcref() will refer to the old function
 
-|Fun| can also be defined after the call to |function()|
+|Fun| can also be defined after the call to |function()|.
 
-Funcref by name :
+Function reference by name : >
 
-```vim
-let list = range(3)
-let Fun = function('add')
-echo Fun(list, 4)
-echo list
-```
+ let list = range(3)
+ let Fun = function('add')
+ echo Fun(list, 4)
+ echo list
+<
 
-With predefined argument(s) :
+With predefined argument(s) : >
 
-```vim
-let list = range(3)
-" add(list, element)
-let Fun = function('add', [list])
-echo Fun(4)
-echo Fun(5)
-echo list
-```
+ let list = range(3)
+ " add(list, element)
+ let Fun = function('add', [list])
+ echo Fun(4)
+ echo Fun(5)
+ echo list
+<
 
-## Arguments
+------------------------------------------------------------------------------
+ARGUMENTS				*vimscript-tricks-functions-arguments*
 
-Inside a function definition, arguments are accessed with a `a:` prefix :
+Inside a function definition, arguments are accessed with a `a:` prefix : >
 
-```vim
-fun! Fun (argument)
-	return a:argument
-endfun
-echo Fun('hello')
-```
+ fun! Fun (argument)
+ 	return a:argument
+ endfun
+ echo Fun('hello')
+<
 
-You can call a function with a given argument list : `call(function, argument-list)` :
+You can call a function with a given argument list : >
 
-```vim
-let list = range(5)
-let element = 'new'
-" synonym of add(list, element)
-echo call('add', [list, element])
-echo list
-```
+ call(function, argument-list)
+<
 
-Also works with a funcref :
+Example : >
 
-```vim
-let list = range(5)
-let Fun = function('add')
-let element = 'new'
-" synonym of add(list, element)
-echo call(Fun, [list, element])
-echo list
-```
+ let list = range(5)
+ let element = 'new'
+ " synonym of add(list, element)
+ echo call('add', [list, element])
+ echo list
+<
 
-## Optional arguments
-### Named optional argument
+Also works with a function reference : >
 
-YOu can give a name to an optional argument :
+ let list = range(5)
+ let Fun = function('add')
+ let element = 'new'
+ " synonym of add(list, element)
+ echo call(Fun, [list, element])
+ echo list
+<
 
-```vim
-fun! Fun (optional = 'default value')
-	return a:optional
-endfun
-echo Fun ()
-echo Fun ('another value')
-```
+------------------------------------------------------------------------------
+OPTIONAL ARGUMENTS	*vimscript-tricks-functions-optional-arguments*
 
-### Anonymous optional arguments
+Named optional argument~
+
+YOu can give a name to an optional argument : >
+
+ fun! Fun (optional = 'default value')
+ 	return a:optional
+ endfun
+ echo Fun ()
+ echo Fun ('another value')
+<
+
+Anonymous optional arguments~
 
 Optional arguments can be defined with the three dots syntax `Fun(...)`.
 You can access them with these special variables :
@@ -948,67 +971,70 @@ You can access them with these special variables :
 - ...
 - a:000 : list of optional args
 
-Application : pass the optional arguments of a function to another one :
+Application : pass the optional arguments of a function to another one : >
 
-```vim
-fun! Fun (...)
-	let var = call('add', a:000)
-	return var
-endfun
-let list = range(5)
-echo Fun (list, 7)
-```
+ fun! Fun (...)
+ 	let var = call('add', a:000)
+ 	return var
+ endfun
+ let list = range(5)
+ echo Fun (list, 7)
+ <
 
-### Mixed
+Mixed~
 
-```vim
-fun! Fun (named = 'default', ...)
-	return #{named: a:named, anonymous: a:000}
-endfun
-echo Fun ()
-echo Fun ('value')
-echo Fun ('value', 'one', 'two')
-```
+Example : >
 
-## Autoload
+ fun! Fun (named = 'default', ...)
+ 	return #{named: a:named, anonymous: a:000}
+ endfun
+ echo Fun ()
+ echo Fun ('value')
+ echo Fun ('value', 'one', 'two')
+<
+
+------------------------------------------------------------------------------
+AUTOLOAD				*vimscript-tricks-functions-autoload*
 
 It is a good idea to use the autoload feature as much as possible. The
 definition of a function |myfunction| in a file |myfile| located in
-`autoload/myfolder/` looks like :
+`autoload/myfolder/` looks like : >
 
-```vim
-fun! myfolder#myfile#myfunction ()
-	...
-endfun
-```
+ fun! myfolder#myfile#myfunction ()
+ 	...
+ endfun
+<
 
 The `autoload/myfolder` has to be somewhere in your |runtimepath|.
 
-## Lambda
+------------------------------------------------------------------------------
+LAMBDA 					*vimscript-tricks-functions-lambda*
 
-```vim
-let list = [2, 3, 5, 4, 1]
-echo filter(list, {index, value -> value >= 4})
-let list = [2, 3, 5, 1, -1]
-echo map(list, {index, value -> index + value})
-```
+Example : >
 
-## Method
+ let list = [2, 3, 5, 4, 1]
+ echo filter(list, {index, value -> value >= 4})
+ let list = [2, 3, 5, 1, -1]
+ echo map(list, {index, value -> index + value})
+<
 
-```vim
-let number = -3.14
-echo number->abs()
-echo number->abs()->cos()
-echo number->abs()->cos()->acos()
-```
+------------------------------------------------------------------------------
+METHOD 					*vimscript-tricks-functions-method*
 
-Lambda method :
+Example : >
 
-```vim
-let number = 3
-echo number->{ x -> 2 * x }()
-echo number->{ x, y -> x + y }(4)
-```
+ let number = -3.14
+ echo number->abs()
+ echo number->abs()->cos()
+ echo number->abs()->cos()->acos()
+<
+
+Lambda method : >
+
+ let number = 3
+ echo number->{ x -> 2 * x }()
+ echo number->{ x, y -> x + y }(4)
+<
 
 ## Closure
 
