@@ -14,6 +14,7 @@ File system			|vimscript-tricks-filesystem|
 Buffers				|vimscript-tricks-buffers|
 Stream				|vimscript-tricks-stream|
 Functions			|vimscript-tricks-functions|
+Tabs & windows			|vimscript-tricks-tabs-and-windows|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -867,6 +868,8 @@ optional arguments		|vimscript-tricks-functions-optional-arguments|
 Autoload			|vimscript-tricks-functions-autoload|
 Lambda				|vimscript-tricks-functions-lambda|
 Method				|vimscript-tricks-functions-method|
+Closure				|vimscript-tricks-functions-closure|
+Dict functions			|vimscript-tricks-functions-dict-functions|
 
 ------------------------------------------------------------------------------
 NAME 					*vimscript-tricks-functions-name*
@@ -1036,82 +1039,92 @@ Lambda method : >
  echo number->{ x, y -> x + y }(4)
 <
 
-## Closure
+------------------------------------------------------------------------------
+CLOSURE 				*vimscript-tricks-functions-closure*
 
-```vim
-fun! Fonctional(fn, value)
-	fun! Function(arg) closure
-		return a:fn(a:arg, a:value)
-	endfun
-	return funcref('Function')
-endfun
+Example : >
 
-let list = range(10)
-" add(list, element)
-echo Fonctional(function('add'), 3)(list)
-let F = Fonctional(function('add'), 5)
-echo F(list)
-```
+ fun! Fonctional(fn, value)
+ 	fun! Function(arg) closure
+ 		return a:fn(a:arg, a:value)
+ 	endfun
+ 	return funcref('Function')
+ endfun
 
-## Dict functions
+ let list = range(10)
+ " add(list, element)
+ echo Fonctional(function('add'), 3)(list)
+ let F = Fonctional(function('add'), 5)
+ echo F(list)
+<
 
-Dict function :
+------------------------------------------------------------------------------
+DICT FUNCTIONS 				*vimscript-tricks-functions-dict-funs*
 
-```vim
-fun! Fundict (arg) dict
-	echo self.name a:arg
-endfun
-" associate it with a dict
-let dict = {'name' : 'John'}
-let dict.fun = function('Fundict')
-" call it
-call dict.fun('Doe')
-" function ref
-let F = function('Fundict', dict)
-call F('Smith')
-" with empty arg
-let G = function('Fundict', [], dict)
-call G('Foo')
-" with predefined arg
-let H = function('Fundict', ['Bar'], dict)
-call H()
-```
+Dict function : >
 
-Anonymous function :
+ fun! Fundict (arg) dict
+ 	echo self.name a:arg
+ endfun
+ " associate it with a dict
+ let dict = {'name' : 'John'}
+ let dict.fun = function('Fundict')
+ " call it
+ call dict.fun('Doe')
+ " function ref
+ let F = function('Fundict', dict)
+ call F('Smith')
+ " with empty arg
+ let G = function('Fundict', [], dict)
+ call G('Foo')
+ " with predefined arg
+ let H = function('Fundict', ['Bar'], dict)
+ call H()
+<
 
-```vim
-let dict = {'name' : 'John'}
-fun! dict.iam (arg) dict
-	echo self.name a:arg
-endfun
-call dict.iam('Will')
-```
+Anonymous function : >
 
-# Tabs & windows
-## Introduction
+ let dict = {'name' : 'John'}
+ fun! dict.iam (arg) dict
+ 	echo self.name a:arg
+ endfun
+ call dict.iam('Will')
+<
+
+==============================================================================
+TABS AND WINDOWS			*vimscript-tricks-tabs-and-windows*
+
+Introduction			|vimscript-tricks-tabs-and-window-introduction|
+Tab number			|vimscript-tricks-tabs-and-window-tab-number|
+Tab buffer list			|vimscript-tricks-tabs-and-window-tab-number|
+
+------------------------------------------------------------------------------
+INTRODUCTION		*vimscript-tricks-tabs-and-windows-introduction*
 
 Each window has a :
 
 - local tab number
 - global unique ID (until you restart vim, of course)
 
-## Tab number
+------------------------------------------------------------------------------
+TAB NUMBER			*vimscript-tricks-tabs-and-windows-tab-number*
 
-```vim
-let current_tab = tabpagenr()
-let last_tab = tabpagenr('$')
-```
+Examlpe : >
 
-## Buffer list of a tab
+ let current_tab = tabpagenr()
+ let last_tab = tabpagenr('$')
+<
 
-With |tabpagebuflist()| :
+------------------------------------------------------------------------------
+TAB BUFFER LIST		*vimscript-tricks-tabs-and-windows-tab-buflist*
 
-```vim
-let last = tabpagenr('$')
-for tab in range(1, last)
-	echo tab ':' tabpagebuflist(tab)
-endfor
-```
+With |tabpagebuflist()| : >
+
+ let last = tabpagenr('$')
+ for tab in range(1, last)
+ 	echo tab ':' tabpagebuflist(tab)
+ endfor
+<
 
 
 ## Local window number
