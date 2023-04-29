@@ -10,6 +10,7 @@ Numbers				|vimscript-tricks-numbers|
 Variables			|vimscript-tricks-variables|
 Lists & Dictionaries		|vimscript-tricks-lists-and-dicts|
 Constants			|vimscript-tricks-constants|
+Options				|vimscript-tricks-options|
 File system			|vimscript-tricks-filesystem|
 Buffers				|vimscript-tricks-buffers|
 Stream				|vimscript-tricks-stream|
@@ -615,7 +616,7 @@ Access local option value with ampersand and `l:` prefix : >
 
 See also |setglobal|, |setlocal| and `let-&`.
 
-Don't confuse :
+Don't confound :
 
 - the buffer local `l:` prefix in options
 - the function local `l:` prefix in variables
