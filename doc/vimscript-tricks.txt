@@ -15,6 +15,8 @@ Buffers				|vimscript-tricks-buffers|
 Stream				|vimscript-tricks-stream|
 Functions			|vimscript-tricks-functions|
 Tabs & windows			|vimscript-tricks-tabs-and-windows|
+Mappings			|vimscript-tricks-mappings|
+Autocommands			|vimscript-tricks-autocommands|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -1179,32 +1181,37 @@ Find in which window(s) is displayed a buffer : >
  let win_list = win_findbuf(buf_nr)
 <
 
-# Mappings
-## Command maps
+==============================================================================
+MAPPINGS					*vimscript-tricks-mappings*
 
-Of course, you can use :
+Commands maps			|vimscript-tricks-mappings-commands-maps|
+Expression			|vimscript-tricks-mappings-expression|
+Plugs				|vimscript-tricks-mappings-plugs|
 
-```vim
-" command
-nnoremap <c-right> :tabnext<cr>
-" with <c-u> to avoid things like :'<,'>
-nnoremap <c-right> :<c-u>tabnext<cr>
-" call function
-nnoremap <c-right> :call goto_next_tab()<cr>
-" from insert mode
-inoremap <c-right> <esc>:tabnext<cr>i
-```
+------------------------------------------------------------------------------
+COMMAND MAPS			*vimscript-tricks-mappings-commands-maps*
 
-but it’s often better to use `<cmd>` :
+Of course, you can use : >
 
-```vim
-" command, no need to add <c-u>
-nnoremap <c-right> <cmd>tabnext<cr>
-" call function
-nnoremap <c-right> <cmd>call goto_next_tab()<cr>
-" from insert mode, no need to surround with <esc>...i
-inoremap <c-right> <cmd>tabnext<cr>
-```
+ " command
+ nnoremap <c-right> :tabnext<cr>
+ " with <c-u> to avoid things like :'<,'>
+ nnoremap <c-right> :<c-u>tabnext<cr>
+ " call function
+ nnoremap <c-right> :call goto_next_tab()<cr>
+ " from insert mode
+ inoremap <c-right> <esc>:tabnext<cr>i
+<
+
+but it’s often better to use |<cmd>| : >
+
+ " command, no need to add <c-u>
+ nnoremap <c-right> <cmd>tabnext<cr>
+ " call function
+ nnoremap <c-right> <cmd>call goto_next_tab()<cr>
+ " from insert mode, no need to surround with <esc>...i
+ inoremap <c-right> <cmd>tabnext<cr>
+<
 
 Advantages :
 
@@ -1214,115 +1221,116 @@ Advantages :
 - faster
 - silent
 
-## Expression
+------------------------------------------------------------------------------
+EXPRESSION			*vimscript-tricks-mappings-expression*
 
 An expression map is an indirect one : it calls the function given on
 the rhs to obtain the actual rhs of the map.
 
-Example : if we define the function :
+Example : if we define the function : >
 
-```vim
-fun! TakeFive ()
-	return '5j'
-endfun
-```
+ fun! TakeFive ()
+ 	return '5j'
+ endfun
+<
 
-and the map :
+and the map : >
 
-```vim
-nnoremap <expr> <F3> TakeFive()
-```
+ nnoremap <expr> <F3> TakeFive()
+<
 
 hitting `<F3>` will move the cursor down five lines.
 
 
-## Plugs
+------------------------------------------------------------------------------
+PLUGS					*vimscript-tricks-mappings-plugs*
 
-Define a plug :
+Define a plug : >
 
-```vim
-noremap <plug>(myplugin-function) <cmd>call plugin#file#function()<cr>
-```
+ noremap <plug>(myplugin-function) <cmd>call plugin#file#function()<cr>
+<
 
-and let the user use it for his own map :
+and let the user use it for his own map : >
 
-```vim
-map <user-key> <plug>(myplugin-function)
-```
+ map <user-key> <plug>(myplugin-function)
+<
 
 This last map must be recursive to work.
 
-# Autocommands
-## Custom
+==============================================================================
+AUTOCOMMANDS				*vimscript-tricks-autocommands*
 
-You can trigger a custom event, somewhere in your plugin :
+Custom				|vimscript-tricks-autocommands-custom|
+Control execution		|vimscript-tricks-autocommands-control-execution|
+No ordinary write		|vimscript-tricks-autocommands-bufwritecmd|
+Yank ring			|vimscript-tricks-autocommands-yank-ring|
 
-```vim
-doautocmd User MyPluginEvent
-```
+------------------------------------------------------------------------------
+CUSTOM					*vimscript-tricks-autocommands-custom*
 
-and let the user add whatever command he wants to it :
+You can trigger a custom event, somewhere in your plugin : >
 
-```vim
-autocmd User MyPluginEvent echo 'hello there !'
-```
+ doautocmd User MyPluginEvent
+<
 
-## Control execution
+and let the user add whatever command he wants to it : >
+
+ autocmd User MyPluginEvent echo 'hello there !'
+<
+
+------------------------------------------------------------------------------
+CONTROL EXECUTION	*vimscript-tricks-autocommands-control-execution*
 
 To avoid auto-execution, use |noautocmd|.
 
-This one change window without triggering autocommand :
+This one change window without triggering autocommand : >
 
-```vim
-noautocmd call win_gotoid(window_id)
-```
+ noautocmd call win_gotoid(window_id)
+<
 
-If needed, you can trigger them later by using |doautocmd| :
+If needed, you can trigger them later by using |doautocmd| : >
 
-```vim
-doautocmd WinEnter
-doautocmd BufEnter
+ doautocmd WinEnter
+ doautocmd BufEnter
 	...
-```
+<
 
-## No ordinary write
+------------------------------------------------------------------------------
+NO ORDINARY WRITE		*vimscript-tricks-autocommands-bufwritecmd*
 
 Some buffers are special, and not related to a file, like the quickfix
 window. In that case, writing it does not mean a simple copy to the
 file system, but can involve a completely distinct operation. The
 |BufWriteCmd| event is there to modify the meaning of the |:write|
-command.  These autocommands are often buffer local. Example :
+command.  These autocommands are often buffer local. Example : >
 
-```
-autocmd BufWriteCmd <buffer> call FancyStuff ()
-```
+ autocmd BufWriteCmd <buffer> call FancyStuff ()
+<
 
 Writing the buffer where this autocommand is defined will call
 |FancyStuff()| instead of saving to disc.
 
 
-## Yank ring
+------------------------------------------------------------------------------
+YANK RING		*vimscript-tricks-autocommands-yank-ring*
 
-First define a global var to hold the ring :
+First define a global var to hold the ring : >
 
-```vim
 let g:yankring = []
-```
+<
 
-then define a function to add yanks :
+then define a function to add yanks : >
 
-```vim
 fun! Add2yankring ()
 	let content = getreg('"')
-	call insert(yanks, content)
+	call insert(g:yankring, content)
 endfun
-```
+<
 
-With this autocommand, your function will be triggered at each yank :
+With this autocommand, your function will be triggered at each yank : >
 
-```vim
-autocmd TextYankPost * call Add2yankring()
-```
+ autocmd TextYankPost * call Add2yankring()
+<
 
 # Common typos
 
