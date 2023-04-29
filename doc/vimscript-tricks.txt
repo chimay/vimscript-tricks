@@ -9,6 +9,9 @@ Expressions			|vimscript-tricks-expressions|
 Numbers				|vimscript-tricks-numbers|
 Variables			|vimscript-tricks-variables|
 Lists & Dictionaries		|vimscript-tricks-lists-and-dicts|
+Constants			|vimscript-tricks-constants|
+File system			|vimscript-tricks-filesystem|
+Buffers				|vimscript-tricks-buffers|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -48,16 +51,16 @@ list.
 
 Each kind of VimL object has its own syntax :
 
-- normal mode key : `ctrl-a`
-- insert mode key : `i_ctrl-a`
-- visual mode key : `v_o`
-- command mode key : `c_ctrl-d`, `c_<tab>`
+- normal mode key : |ctrl-a|
+- insert mode key : |i_ctrl-a|
+- visual mode key : |v_o|
+- command mode key : |c_ctrl-d|, |c_<tab>|
 - command : |:buffers|
 - function : |getbufinfo()|
-- option : `'option'`
-- expression : `expr-&&`
-- regex pattern : `/*`
-- vim flag : `-p`
+- option : |'option'|
+- expression : |expr-&&|
+- regex pattern : |/*|
+- vim flag : |-p|
 
 Finally, the reference : >
 
@@ -508,25 +511,39 @@ Empty element at begin or end are kept only if asked : >
  echo split(string, ' - ', keepempty)
 <
 
-# Constants
+==============================================================================
+CONSTANTS					*vimscript-tricks-constants*
 
-```vim
-let box = 3
-echo box
-" box -> constant
-lockvar box
-" throws error E741
-let box = 4
-echo box
-" box -> variable
-unlockvar box
-" ok
-let box = 5
-echo box
-```
+Examples : >
 
-# Variable containing code
-## Ex command
+ let box = 3
+ echo box
+ " box -> constant
+ lockvar box
+ " throws error E741
+ let box = 4
+ echo box
+ " box -> variable
+ unlockvar box
+ " ok
+ let box = 5
+ echo box
+ " set box as constant from the start
+ const box = 3
+ " throws error E741
+ let box = 4
+<
+
+==============================================================================
+VARIABLE CONTAINING CODE		*vimscript-tricks-variable-code*
+
+Ex command			|vimscript-tricks-variable-code-ex-command|
+Expression			|vimscript-tricks-variable-code-expression|
+Normal mode			|vimscript-tricks-variable-code-normal-mode|
+Pointer				|vimscript-tricks-variable-code-pointer|
+
+------------------------------------------------------------------------------
+EX COMMAND			*vimscript-tricks-variable-code-ex-command*
 
 With |:execute| : >
 
@@ -535,7 +552,8 @@ With |:execute| : >
  echo var
 <
 
-## Expression
+------------------------------------------------------------------------------
+EXPRESSION			*vimscript-tricks-variable-code-expression*
 
 With |eval()| : >
 
@@ -550,11 +568,13 @@ Can be used to revert |string()| : >
  " returns 1 = string
  echo type(str)
  let new_list = eval(str)
+ echo new_list
  " returns 3 = list
  echo type(new_list)
 <
 
-## Normal mode
+------------------------------------------------------------------------------
+NORMAL MODE			*vimscript-tricks-variable-code-normal-mode*
 
 With |:normal| : >
 
@@ -562,7 +582,8 @@ With |:normal| : >
  execute 'normal! ' . delta . "\<c-o>"
 <
 
-## Pointer : variable name
+------------------------------------------------------------------------------
+POINTER				*vimscript-tricks-variable-code-pointer*
 
 Variable containing the name of another variable : >
 
@@ -571,24 +592,22 @@ Variable containing the name of another variable : >
  echo {ptr}
 <
 
-# Options
+==============================================================================
+OPTIONS						*vimscript-tricks-options*
 
-Access global option value with ampersand and `g:` prefix :
+Access global option value with ampersand and `g:` prefix : >
 
-```vim
-let &g:modifiable = 1
-echo &g:modifiable
-```
+ let &g:modifiable = 1
+ echo &g:modifiable
+<
 
-Access local option value with ampersand and `l:` prefix :
+Access local option value with ampersand and `l:` prefix : >
 
-```vim
-let &l:modifiable = 1
-echo &l:modifiable
-```
+ let &l:modifiable = 1
+ echo &l:modifiable
+<
 
 See also |setglobal|, |setlocal| and `let-&`.
-
 
 Don't confuse :
 
@@ -596,128 +615,134 @@ Don't confuse :
 - the function local `l:` prefix in variables
 - the buffer local `b:` prefix in variables
 
-# File system
-## Test
+==============================================================================
+FILE SYSTEM					*vimscript-tricks-filesystem*
 
-Test for a regular file :
+Introduction			|vimscript-tricks-filesystem-test|
+File name			|vimscript-tricks-filesystem-filename|
+Globbing			|vimscript-tricks-filesystem-globbing|
 
-```vim
-if filereadable(my_file)
-	call do_something (my_file)
-endif
-```
+------------------------------------------------------------------------------
+TEST					*vimscript-tricks-filesystem-test*
 
-Test for a directory :
+Test for a regular file : >
 
-```vim
-if isdirectory(my_dir)
-	call do_something (my_dir)
-endif
-```
+ if filereadable(my_file)
+ 	call do_something (my_file)
+ endif
+<
 
-## File name
+Test for a directory : >
 
-Expand the tilde with |expand()| :
+ if isdirectory(my_dir)
+ 	call do_something (my_dir)
+ endif
+<
 
-```vim
-echo expand('~/Documents')
-```
+------------------------------------------------------------------------------
+FILE NAME				*vimscript-tricks-filesystem-filename*
 
-Modify the name with |fnamemodify()| :
+Expand the tilde with |expand()| : >
 
-```vim
-" full path
-echo fnamemodify('~/Documents/file', ':p')
-echo fnamemodify('Documents/folder/file', ':p')
-" directory part (head)
-echo fnamemodify('~/Documents/file', ':h')
-echo fnamemodify('Documents/folder/file', ':h')
-" file part (tail)
-echo fnamemodify('~/Documents/file', ':t')
-echo fnamemodify('Documents/folder/file', ':t')
-" without extension
-echo fnamemodify('~/Documents/file.ext', ':r')
-echo fnamemodify('Documents/folder/file.ext', ':r')
-echo fnamemodify('~/Documents/file.tar.gz', ':r')
-echo fnamemodify('~/Documents/file.tar.gz', ':r:r')
-" extension
-echo fnamemodify('~/Documents/file.ext', ':e')
-echo fnamemodify('~/Documents/file.tar.gz', ':e')
-echo fnamemodify('~/Documents/file.tar.gz', ':e:e')
-```
+ echo expand('~/Documents')
+<
 
-## Globbing
+Modify the name with |fnamemodify()| : >
 
-List of files & dirs in current folder :
+ " full path
+ echo fnamemodify('~/Documents/file', ':p')
+ echo fnamemodify('Documents/folder/file', ':p')
+ " directory part (head)
+ echo fnamemodify('~/Documents/file', ':h')
+ echo fnamemodify('Documents/folder/file', ':h')
+ " file part (tail)
+ echo fnamemodify('~/Documents/file', ':t')
+ echo fnamemodify('Documents/folder/file', ':t')
+ " without extension
+ echo fnamemodify('~/Documents/file.ext', ':r')
+ echo fnamemodify('Documents/folder/file.ext', ':r')
+ echo fnamemodify('~/Documents/file.tar.gz', ':r')
+ echo fnamemodify('~/Documents/file.tar.gz', ':r:r')
+ " extension
+ echo fnamemodify('~/Documents/file.ext', ':e')
+ echo fnamemodify('~/Documents/file.tar.gz', ':e')
+ echo fnamemodify('~/Documents/file.tar.gz', ':e:e')
+<
 
-```vim
-echo glob('*', v:false, v:true)
-```
+------------------------------------------------------------------------------
+GLOBBING				*vimscript-tricks-filesystem-globbing*
 
-Recursive, all tree of files & dirs in current folder :
+List of files & dirs in current folder : >
 
-```vim
-echo glob('**', v:false, v:true)
-```
+ echo glob('*', v:false, v:true)
+<
+
+Recursive, all tree of files & dirs in current folder : >
+
+ echo glob('**', v:false, v:true)
+<
 
 Note the double asterisk.
 
-Tree of vim files :
+Tree of vim files : >
 
-```vim
-echo glob('**/*.vim', v:false, v:true)
-```
+ echo glob('**/*.vim', v:false, v:true)
+<
 
-# Buffers
-## Number & name
+==============================================================================
+BUFFERS						*vimscript-tricks-buffers*
 
-Name from number :
+Number and name			|vimscript-tricks-buffers-number-and-name|
 
-```vim
-echo bufname(1)
-```
+------------------------------------------------------------------------------
+NUMBER AND NAME			*vimscript-tricks-buffers-number-and-name*
 
-Number from name :
+Name from number : >
 
-```vim
-let name = bufname(1)
-echo bufnr(name)
-```
+ echo bufname(1)
+<
 
-## List of buffers
+Number from name : >
 
-All buffers :
+ let name = bufname(1)
+ echo bufnr(name)
+<
 
-```vim
-let buffers = getbufinfo()
-for buf in buffers
-	echo buf.number ':' buf.name
-endfor
-```
-Listed buffers :
+------------------------------------------------------------------------------
+LIST OF BUFFERS				*vimscript-tricks-buffers-list*
 
-```vim
-let buffers = getbufinfo({'buflisted' : 1})
-for buf in buffers
-	echo buf.number ':' buf.name
-endfor
-```
+All buffers : >
 
-## Lines
-### Current buffer
+ let buffers = getbufinfo()
+ for buf in buffers
+ 	echo buf.number ':' buf.name
+ endfor
+<
 
-List of lines in current buffer :
+Listed buffers : >
 
-```
-" -- line number, output is a string
-" current line
-echo getline('.')
-" last line
-echo getline('$')
-" -- range of line, output is a list
-echo getline(1, 10)
-echo getline('.', '$')
-```
+ let buffers = getbufinfo({'buflisted' : 1})
+ for buf in buffers
+ 	echo buf.number ':' buf.name
+ endfor
+<
+
+------------------------------------------------------------------------------
+LINES					*vimscript-tricks-buffers-lines*
+
+Current buffer~
+
+List of lines in current buffer : >
+
+ " -- line number, output is a string
+ " current line
+ echo getline('.')
+ " last line
+ echo getline('$')
+ " -- range of line, output is a list
+ echo getline(1, 10)
+ echo getline('.', '$')
+<
 
 With `setline(line, text)`, you can change a line.
 
