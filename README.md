@@ -21,9 +21,9 @@ If you ever searched the web for `vim script ex command output in a var`,
 you surely have had results talking about `:redir`. This is ok, but
 there is a more elegant solution for this particular problem.
 
-This wiki collects vim script snippets, whose some were hard to find. You
-may already know some of them, and I hope you will gladly discover
-the others.
+This (neo)vim help page collects vim script snippets, whose some were
+hard to find. You may already know some of them, and I hope you will
+gladly discover the others.
 
 # Installation
 ## Using vim-packager
