@@ -25,6 +25,22 @@ This (neo)vim help page collects vim script snippets, whose some were
 hard to find. You may already know some of them, and I hope you will
 gladly discover the others.
 
+# Usage
+
+Straightforward :
+
+```vim
+:help vimscript-tricks
+```
+
+Don't forget to run :
+
+```vim
+:helptags doc
+```
+
+to be able to use the inline help.
+
 # Installation
 ## Using vim-packager
 
@@ -69,19 +85,3 @@ mkdir -p ~/.local/share/nvim/site/pack/foo/start
 cd ~/.local/share/nvim/site/pack/foo/start
 git clone --depth 1 --filter=blob:none https://github.com/chimay/vimscript-tricks
 ```
-
-# Usage
-
-Straightforward :
-
-```vim
-:help vimscript-tricks
-```
-
-Don't forget to run :
-
-```vim
-:helptags doc
-```
-
-to be able to use the inline help.
