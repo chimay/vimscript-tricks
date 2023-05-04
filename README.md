@@ -3,12 +3,12 @@
 <!-- vim-markdown-toc GFM -->
 
 * [Introduction](#introduction)
+* [Usage](#usage)
 * [Installation](#installation)
     * [Using vim-packager](#using-vim-packager)
     * [Using minpac](#using-minpac)
     * [Using vim-plug](#using-vim-plug)
     * [Cloning the repo in a pack-start directory](#cloning-the-repo-in-a-pack-start-directory)
-* [Usage](#usage)
 
 <!-- vim-markdown-toc -->
 
