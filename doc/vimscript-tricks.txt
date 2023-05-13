@@ -20,6 +20,7 @@ Mappings			|vimscript-tricks-mappings|
 Autocommands			|vimscript-tricks-autocommands|
 Common typos			|vimscript-tricks-common-typos|
 Errors				|vimscript-tricks-errors|
+Profile				|vimscript-tricks-profile|
 
 ==============================================================================
 INTRODUCTION				*vimscript-tricks-introduction*
@@ -1397,13 +1398,29 @@ all the scopes at once, use |:throw| : >
  function A()
      let h = Helper ()
      if h ==# 'bad value that will mess up everything'
-     	throw 'we stop here'
+         throw 'we stop here'
      endif
  endfunction
 
  function B()
      let a = A ()
  endfunction
+<
+
+==============================================================================
+PROFILE						*vimscript-tricks-profile*
+
+The |:profile| command can help you to locate where your functions spend a lot
+of time. Example : >
+
+ " ---- in vim
+ profile start ~/vim-profile.log
+ profile func *
+ profile file *
+ " ... doing stuff to profile ...
+ profile stop
+ " ---- in a terminal
+ less ~/vim-profile.log
 <
 
 ==============================================================================
