@@ -6,6 +6,7 @@ CONTENTS			*vimscript-tricks*
 Introduction			|vimscript-tricks-introduction|
 Help				|vimscript-tricks-help|
 Expressions			|vimscript-tricks-expressions|
+Strings				|vimscript-tricks-strings|
 Numbers				|vimscript-tricks-numbers|
 Variables			|vimscript-tricks-variables|
 Lists & Dictionaries		|vimscript-tricks-lists-and-dicts|
@@ -98,6 +99,83 @@ The command |:call| calls a function, without assigning the result : >
  let list = range(5)
  call add(list, 10)
  echo list
+<
+
+==============================================================================
+STRINGs						*vimscript-tricks-strings*
+
+Generic				|vimscript-tricks-strings-generic|
+Match				|vimscript-tricks-strings-match|
+Multibyte characters		|vimscript-tricks-strings-multibyte|
+
+------------------------------------------------------------------------------
+GENERIC					*vimscript-tricks-strings-generic*
+
+You can use |string()| to convert almost anything to a string : >
+
+ let str = string(range(10))
+ echo str[1:7]
+ let str = string(#{ abc : 'def', ghi : 'jkl' })
+ echo str[1:12]
+<
+
+------------------------------------------------------------------------------
+MATCH					*vimscript-tricks-strings-match*
+
+There are a lot of match functions : >
+
+ let string = 'find a match in the shelve'
+ " match start index
+ let index = string->match('shelve')
+ echo index
+ " match string
+ let matchstring = string->matchstr(' a \w\+')
+ echo matchstring
+ " match string, begin & end index
+ let match_beg_end = string->matchstrpos('\<a \w\+')
+ echo match_beg_end
+ " full match & submatches from \(...\)
+ let matchlist = string->matchlist('\(\w\+\) \(\w\+\) \(\w\+\)')
+ echo matchlist
+<
+
+It's more complicated to get a string gathering all matches. There is a
+workaround using |substitute()| : >
+
+ let string = 'in that room, you can find a table, a chair and a window.'
+ function! Allmatches (string)
+    let matches = []
+    let Lambda = { match -> string(matches->add(match[0])) }
+    call substitute(a:string, '\<a \w\+', Lambda, 'g')
+    return matches
+ endfunction
+ echo Allmatches(string)
+<
+
+There is also a more straightforward (and verbose) solution using a
+`while match found` loop.
+
+------------------------------------------------------------------------------
+MULTIBYTE CHARACTERS			*vimscript-tricks-strings-multibyte*
+
+While |len()| or |strlen()| give you a string length in bytes, |strcharlen()|
+gives you the length in characters : >
+
+
+ let str = 'aà eéè iï oô uù'
+ " 21
+ echo len(str) strlen(str)
+ " 15
+ echo strcharlen(str)
+<
+
+You can convert byte and character index : >
+
+ let str = 'aà eéè iï oô uù'
+ " byte index of the 4th char = 5
+ echo str->byteidx(4)
+ " char index of the 9th byte = 6
+ echo str->charidx(9)
 <
 
 ==============================================================================
@@ -701,9 +779,30 @@ Tree of vim files : >
 ==============================================================================
 BUFFERS						*vimscript-tricks-buffers*
 
+Cursor				|vimscript-tricks-buffers-cursor|
 Number and name			|vimscript-tricks-buffers-number-and-name|
 List				|vimscript-tricks-buffers-list|
 Lines				|vimscript-tricks-buffers-lines|
+
+------------------------------------------------------------------------------
+CURSOR				*vimscript-tricks-buffers-cursor*
+
+Move the cursor : >
+
+ " move cursor to last char of current line
+ call cursor('.', col('$'))
+ " move cursor to last buffer line
+ call cursor('$', 1)
+<
+
+Save and restore the cursor position : >
+
+ " save cursor position
+ let position = getcurpos ()
+ " ... travel, search ...
+ " restore cursor position
+ call setpos('.', position)
+<
 
 ------------------------------------------------------------------------------
 NUMBER AND NAME			*vimscript-tricks-buffers-number-and-name*
