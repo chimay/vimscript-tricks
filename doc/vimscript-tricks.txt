@@ -145,14 +145,25 @@ occurences. There is a workaround using |substitute()| : >
  let string = 'in that room, you can find a table, a chair and a window.'
  function! Allmatches (string)
     let matches = []
-    let Lambda = { match -> string(matches->add(match[0])) }
+    let Lambda = { match -> string(matches->add(match[0])[-1]) }
     call substitute(a:string, '\<a \w\+', Lambda, 'g')
     return matches
  endfunction
  echo Allmatches(string)
 <
 
-There is also a more straightforward (and verbose) solution using a
+You can also uses the |sub-replace-\=| syntax :
+
+ let string = 'in that room, you can find a table, a chair and a window.'
+ function! Allmatches (string)
+    let matches = []
+    call substitute(a:string, '\<a \w\+', '\=matches->add(submatch(0))', 'g')
+    return matches
+ endfunction
+ echo Allmatches(string)
+<
+
+Finally, you have the straightforward (and verbose) solution that uses a
 `while match found` loop.
 
 ------------------------------------------------------------------------------
