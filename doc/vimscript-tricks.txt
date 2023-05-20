@@ -139,8 +139,8 @@ There are a lot of match functions : >
  echo matchlist
 <
 
-It's more complicated to get a string gathering all full matches
-occurences. There is a workaround using |substitute()| : >
+It's more complicated to get a list gathering all full matches occurences
+in the string. There is a workaround using |substitute()| : >
 
  let string = 'in that room, you can find a table, a chair and a window.'
  function! Allmatches (string)
