@@ -177,7 +177,17 @@ gives you the length in characters : >
  " 21
  echo len(str) strlen(str)
  " 15
- echo strcharlen(str)
+ echo strcharlen(str) strchars(str)
+<
+
+Use |strdisplaywidth()| to display width of a string in a buffer,
+counting multibyte chars as one and a tab as tabstop chars : >
+
+ let str = "\t aà eéè iï oô uù"
+ " 17
+ echo strcharlen(str) strchars(str)
+ " 24 with tabstop=8
+ echo strdisplaywidth(str)
 <
 
 You can convert byte and character index : >
