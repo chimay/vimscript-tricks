@@ -117,6 +117,12 @@ You can use |string()| to convert almost anything to a string : >
  echo str[1:7]
  let str = string(#{ abc : 'def', ghi : 'jkl' })
  echo str[1:12]
+ let str = 'abcdef'
+ echo str[0]
+ " does not work as in lists (compatibility reason)
+ echo str[-1]
+ " ok
+ echo str[-1:]
 <
 
 ------------------------------------------------------------------------------
