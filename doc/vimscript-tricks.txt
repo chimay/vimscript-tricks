@@ -69,7 +69,8 @@ Each kind of VimL object has its own syntax :
 - function : |getbufinfo()|
 - option : |'option'|
 - expression : |expr-&&|
-- regex pattern : |/*|
+- regex pattern : |/^|
+- replace special pattern : |s/\0|
 - vim flag : |-p|
 
 Finally, the reference : >
